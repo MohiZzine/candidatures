@@ -61,7 +61,9 @@ VALUES
 
 INSERT INTO elections (title, description, start_date, end_date)
 VALUES
-('Election 1', 'This is the first election.', '2023-06-01 00:00:00', '2023-06-30 23:59:59'),
+('Election 1', 'This is the first election.', '2023-06-01 10:10:10', '2023-06-30 23:20:55'),
+('Election 2', 'This is the second election.', '2023-06-30 18:30:53', '2023-07-01 30:30:30'),
+('Election 3', 'This is the third election.', '2023-06-30 11:59:59', '2023-08-01 50:50:50'),
 
 INSERT INTO candidates (election_id, candidate_name, photo)
 VALUES
