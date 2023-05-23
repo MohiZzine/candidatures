@@ -1,0 +1,35 @@
+::root {
+  --green: rgb(58, 168, 174);
+}
+
+#submit-code {
+  background: --green;
+  color: #ffffff;
+}
+
+#resend-code {
+  background: whitesmoke;
+  color: #333;
+  border: #333 solid 1px;
+}
+
+input.digit {
+  width: 55px;
+  height: 35px;
+  text-align: center;
+  font-size: 10px;
+}
+
+input.invalid {
+  border: 2px solid red;
+}
+
+button {
+  border-radius: 16px;
+  width: 160px;
+  border: transparent;
+}
+
+button #submit i:hover {
+  cursor: pointer;
+}
