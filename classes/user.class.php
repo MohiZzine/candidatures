@@ -1,36 +1,32 @@
 <?php
 // require_once('database.class.php');
-require_once('../server/assets/token_generator.php');
-require_once('mailer.php');
 class User
 {
   private $user_id;
-  private $first_name;
+  private $name;
   private $username;
   private $email;
   private $active;
   private $password;
   private $is_admin;
-  private $activation_expiry;
-  private $activation_code;
   private $pdo;
   public function __construct($db)
   {
     $this->pdo = $db;
   }
 
-  public function setAttributes($first_name, $username, $email, $password, $active = false)
+  public function setAttributes($name, $username, $email, $password, $active = false)
   {
-    $this->first_name = $first_name;
+    $this->name = $name;
     $this->username = $username;
     $this->email = $email;
     $this->$active = $active;
     $this->password = $password;
   }
 
-  public function get_first_name()
+  public function get_name()
   {
-    return $this->first_name;
+    return $this->name;
   }
 
   public function get_username()
@@ -58,20 +54,6 @@ class User
     return $this->is_admin;
   }
 
-  public function get_activation_expiry()
-  {
-    $sql = "SELECT activation_expiry FROM User WHERE user_id = :user_id";
-    $stmt = $this->pdo->prepare($sql);
-    $stmt->execute(['user_id' => $this->user_id]);
-    return $stmt->fetch(PDO::FETCH_ASSOC);
-    // return $this->activation_expiry;
-  }
-
-  public function get_activation_code()
-  {
-    return $this->activation_code;
-  }
-
   public function get_user_id()
   {
     return $this->user_id;
@@ -82,9 +64,9 @@ class User
     $this->user_id = $id;
   }
 
-  private function set_first_name($first_name)
+  private function set_name($name)
   {
-    $this->first_name = $first_name;
+    $this->name = $name;
   }
 
   private function set_username($username)
@@ -109,17 +91,18 @@ class User
 
   public function register()
   {
-    $sql = "INSERT INTO User (first_name, username, email, password, is_admin, active) VALUES (:first_name, :username, :email, :password, 0, 0)";
+    $is_admin = $this->is_admin ? 1 : 0;
+    $sql = "INSERT INTO User (name, username, email, password, is_admin, active) VALUES (:name, :username, :email, :password, $is_admin, 1)";
     $stmt = $this->pdo->prepare($sql);
-    $this->first_name = htmlspecialchars(strip_tags($this->first_name));
+    $this->name = htmlspecialchars(strip_tags($this->name));
     $this->username = htmlspecialchars(strip_tags($this->username));
     $this->email = htmlspecialchars(strip_tags($this->email));
     $this->password = htmlspecialchars(strip_tags($this->password));
     $hashed_password = password_hash($this->password, PASSWORD_BCRYPT);
-    if ($stmt->execute(['first_name' => $this->first_name, 'username' => $this->username, 'email' => $this->email, 'password' => $hashed_password])) {
+    if ($stmt->execute(['name' => $this->name, 'username' => $this->username, 'email' => $this->email, 'password' => $hashed_password])) {
       return [
         'user_id' => $this->pdo->lastInsertId(),
-        'first_name' => $this->first_name,
+        'name' => $this->name,
         'username' => $this->username,
         'email' => $this->email,
         'password' => $hashed_password
@@ -128,55 +111,21 @@ class User
     return false;
   }
 
-  public function login($username_or_email, $password)
+  public function login($username, $password)
   {
     $sql = "SELECT * FROM User WHERE (username=:username) OR (email=:email)";
     $stmt = $this->pdo->prepare($sql);
-    $username_or_email = htmlspecialchars(strip_tags($username_or_email));
+    $username = htmlspecialchars(strip_tags($username));
     $password = htmlspecialchars(strip_tags($password));
-    $stmt->execute(['username' => $username_or_email, 'email' => $username_or_email]);
+    $stmt->execute(['username' => $username, 'email' => $username]);
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
     if ($result) {
       if (password_verify($password, $result['password'])) {
-        ['user_id' => $user_id, 'first_name' => $first_name, 'username' => $username, 'email' => $email, 'password' => $password] = $result;
-        $this->setAttributes($first_name, $username, $email, $password);
+        ['user_id' => $user_id, 'name' => $name, 'username' => $username, 'email' => $email, 'password' => $password] = $result;
+        $this->setAttributes($name, $username, $email, $password);
         return $result;
       }
       return 'Password is incorrect!';
-    }
-    return false;
-  }
-
-  public function authenticate_user()
-  {
-    $sql = "UPDATE User SET active = 1 WHERE user_id=:user_id";
-    $stmt = $this->pdo->prepare($sql);
-    $stmt->execute(['user_id' => $this->user_id]);
-  }
-
-  public function send_authentication_code($url)
-  {
-    $sql = "UPDATE User SET activation_code=:activation_code, activation_expiry=:activation_expiry WHERE user_id=:user_id";
-    $stmt = $this->pdo->prepare($sql);
-    $random_number = strval(token_generator());
-    $token = password_hash($random_number, PASSWORD_DEFAULT);
-    $this->activation_code = $token;
-    $expiry = time() + 1 * 10 * 60;
-    $this->activation_expiry = date('Y-m-d H:i:s', $expiry);
-    $stmt->execute(['activation_code' => $this->activation_code, 'activation_expiry' => $this->activation_expiry, 'user_id' => $this->user_id]);
-    sendMail($this->email, $this->first_name, $token, $url);
-    return $token;
-  }
-
-  public function verify_authentication_code($code)
-  {
-    $sql = "SELECT * FROM User WHERE user_id=:user_id";
-    $stmt = $this->pdo->prepare($sql);
-    $stmt->execute(['user_id' => $this->user_id]);
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    if (password_verify($code, $result['activation_code'])) {
-      $this->authenticate_user();
-      return true;
     }
     return false;
   }
@@ -250,6 +199,6 @@ class User
   public function logout()
   {
     session_destroy();
-    header('Location: login.php');
+    header('Location: ../login.php');
   }
 }

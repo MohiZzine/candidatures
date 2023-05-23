@@ -8,6 +8,7 @@
 require_once('../classes/Database.class.php');
 require_once('../classes/User.class.php');
 
+$name = $nameError = "";
 $username = $usernameError = "";
 $email = $emailError = "";
 $password = $passwordError = "";
@@ -16,10 +17,10 @@ $confirm_password = $confirm_passwordError = "";
 if (isset($_POST['register'])) {
   $errors = array();
   // Validate First name
-  if (empty(trim($_POST['first_name']))) {
-    $first_name = NULL;
+  if (empty(trim($_POST['name']))) {
+    $name = "Name should not be empty!";
   } else {
-    $first_name = trim($_POST['first_name']);
+    $name = trim($_POST['name']);
   }
 
   // Validate username
@@ -75,12 +76,10 @@ if (isset($_POST['register'])) {
   }
 
   session_start();
-  // $_SESSION['user'] = $user;
   $_SESSION['user_id'] = $register['user_id'];
   $_SESSION['user_first_name'] = $register['first_name'];
   $_SESSION['user_email'] = $register['email'];
   $url = '../views/email_verification.php?email=' . $_SESSION['user_email'];
-  $_SESSION['token'] = $user->send_authentication_code($url);
   header($url);
   exit();
   // header('Location: ../views/index.php');

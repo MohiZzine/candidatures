@@ -8,28 +8,37 @@
 require_once('../classes/Database.class.php');
 require_once('../classes/User.class.php');
 
-$username_or_email = $username_or_emailError = "";
+$username = $usernameError = "";
+$name = $nameError = "";
+$email = $emailError = "";
 $password = $passwordError = "";
 
-if (isset($_GET['signup'])) {
-    $errors = array();
+if (isset($_POST['signup'])) {
     header('Location: ../views/register.php');
     exit();
 }
 
-if (isset($_GET['login'])) {
-    if (empty(trim($_GET['username_or_email']))) {
-        $username_or_emailError = "Username or email should not be empty!";
-        $errors['username_or_email'] = "username_or_email=" . $username_or_emailError;
+if (isset($_POST['login'])) {
+    $errors = array();
+    if (empty(trim($_POST['username']))) {
+        $usernameError = "Username should not be empty!";
+        $errors['username'] = "username=" . $usernameError;
     } else {
-        $username_or_email = $_GET['username_or_email'];
+        $username = $_POST['username'];
     }
 
-    if (strlen(trim($_GET['password'])) < 6) {
+    if (empty(trim($_POST['username']))) {
+        $emailError = "Email should not be empty!";
+        $errors['email'] = "email=" . $emailError;
+    } else {
+        $email = $_POST['email'];
+    }
+
+    if (strlen(trim($_POST['password'])) < 6) {
         $passwordError = "Password must contain at least 6 characters!";
         $errors['password'] = 'password=' . $passwordError;
     } else {
-        $password = $_GET['password'];
+        $password = $_POST['password'];
     }
 
     if (!empty($errors)) {
@@ -42,7 +51,7 @@ if (isset($_GET['login'])) {
     $db->getConnection();
 
     $user = new User($db->pdo);
-    $login = $user->login($username_or_email, $password);
+    $login = $user->login($username, $password);
     if (!$login) {
         $login_error = "login=User not found. Enter a correct username or email!";
         header('Location: ../views/login.php?' . $login_error);
@@ -58,7 +67,7 @@ if (isset($_GET['login'])) {
     $_SESSION['user'] = $login;
     $_SESSION['user_id'] = $login['id'];
     $_SESSION['user_first_name'] = $login['first_name'];
-    header('Location: ../views/index.php');
+    header('Location: ../index.php');
     exit();
 }
 
