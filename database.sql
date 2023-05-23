@@ -50,5 +50,27 @@ CREATE TABLE IF NOT EXISTS programs (
   programme_video INT NOT NULL,
   programme_affiche INT NOT NULL,
   PRIMARY KEY (program_id),
-  FOREIGN KEY (candidate_id) REFERENCES candidates (candidate_id),
+  FOREIGN KEY (candidate_id) REFERENCES candidates (candidate_id)
 );
+
+-- Insert some raw data
+
+INSERT INTO users (username, name, email, password, is_admin)
+VALUES
+('user1', 'User One', 'user1@email.com', 'password1', 0),
+
+INSERT INTO elections (title, description, start_date, end_date)
+VALUES
+('Election 1', 'This is the first election.', '2023-06-01 00:00:00', '2023-06-30 23:59:59'),
+
+INSERT INTO candidates (election_id, candidate_name, photo)
+VALUES
+(1, 'Candidate 1', 'candidate1_photo_url'),
+
+INSERT INTO votes (election_id, user_id, vote)
+VALUES
+(1, 1, 1, '2023-06-05 10:30:00'),
+
+INSERT INTO programs (candidate_id, program_title, program_description, programme_video, programme_affiche)
+VALUES
+(1, 'Program 1', 'This is the first program.', 'program1_video_url', 'program1_affiche_url'),

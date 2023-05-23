@@ -68,7 +68,8 @@ if (isset($_POST['register'])) {
   $db->getConnection();
 
   $user = new User($db->pdo);
-  $user->setAttributes($first_name, $username, $email, $password);
+  // $user->set_is_admin(0);
+  $user->setAttributes($name, $username, $email, $password, 0);
   $register = $user->register();
   if (!$register) {
     $register_error = "register=Username, email, or password already exists!";
@@ -77,10 +78,8 @@ if (isset($_POST['register'])) {
 
   session_start();
   $_SESSION['user_id'] = $register['user_id'];
-  $_SESSION['user_first_name'] = $register['first_name'];
+  $_SESSION['user_name'] = $register['name'];
   $_SESSION['user_email'] = $register['email'];
-  $url = '../views/email_verification.php?email=' . $_SESSION['user_email'];
-  header($url);
+  header('Location: ../index.php');
   exit();
-  // header('Location: ../views/index.php');
 }

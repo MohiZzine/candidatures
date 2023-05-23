@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['user'])) {
+if (!isset($_SESSION['user_id'])) {
   header('Location: views/login.php');
 };
 
@@ -10,9 +10,8 @@ require 'includes/header.php';
 ?>
 
 <?php
-if (isset($_SESSION['user'])) {
-  echo "Welcome, " . $_SESSION['user_first_name'];
-}
+// var_dump($_SESSION);
+echo "Welcome, " . $_SESSION['user_email'];
 ?>
 
 <?php

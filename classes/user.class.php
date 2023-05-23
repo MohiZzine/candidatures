@@ -15,12 +15,12 @@ class User
     $this->pdo = $db;
   }
 
-  public function setAttributes($name, $username, $email, $password, $active = false)
+  public function setAttributes($name, $username, $email, $password, $is_admin)
   {
     $this->name = $name;
     $this->username = $username;
     $this->email = $email;
-    $this->$active = $active;
+    $this->$is_admin = $is_admin;
     $this->password = $password;
   }
 
@@ -44,11 +44,6 @@ class User
     return $this->password;
   }
 
-  public function get_active()
-  {
-    return $this->active;
-  }
-
   public function get_is_admin()
   {
     return $this->is_admin;
@@ -62,6 +57,11 @@ class User
   public function set_user_id($id)
   {
     $this->user_id = $id;
+  }
+
+  public function set_is_admin($status)
+  {
+    $this->is_admin = $status;
   }
 
   private function set_name($name)
@@ -92,20 +92,21 @@ class User
   public function register()
   {
     $is_admin = $this->is_admin ? 1 : 0;
-    $sql = "INSERT INTO User (name, username, email, password, is_admin, active) VALUES (:name, :username, :email, :password, $is_admin, 1)";
+    $sql = "INSERT INTO users(name, username, email, password, is_admin) VALUES (:name, :username, :email, :password, :is_admin)";
     $stmt = $this->pdo->prepare($sql);
     $this->name = htmlspecialchars(strip_tags($this->name));
     $this->username = htmlspecialchars(strip_tags($this->username));
     $this->email = htmlspecialchars(strip_tags($this->email));
     $this->password = htmlspecialchars(strip_tags($this->password));
     $hashed_password = password_hash($this->password, PASSWORD_BCRYPT);
-    if ($stmt->execute(['name' => $this->name, 'username' => $this->username, 'email' => $this->email, 'password' => $hashed_password])) {
+    if ($stmt->execute(['name' => $this->name, 'username' => $this->username, 'email' => $this->email, 'password' => $hashed_password, 'is_admin' => $is_admin])) {
       return [
         'user_id' => $this->pdo->lastInsertId(),
         'name' => $this->name,
         'username' => $this->username,
         'email' => $this->email,
-        'password' => $hashed_password
+        'password' => $hashed_password,
+        'is_admin' => $is_admin
       ];
     }
     return false;
@@ -113,16 +114,16 @@ class User
 
   public function login($username, $password)
   {
-    $sql = "SELECT * FROM User WHERE (username=:username) OR (email=:email)";
+    $sql = "SELECT * FROM Users WHERE username=:username";
     $stmt = $this->pdo->prepare($sql);
     $username = htmlspecialchars(strip_tags($username));
     $password = htmlspecialchars(strip_tags($password));
-    $stmt->execute(['username' => $username, 'email' => $username]);
+    $stmt->execute(['username' => $username]);
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
     if ($result) {
       if (password_verify($password, $result['password'])) {
-        ['user_id' => $user_id, 'name' => $name, 'username' => $username, 'email' => $email, 'password' => $password] = $result;
-        $this->setAttributes($name, $username, $email, $password);
+        ['user_id' => $user_id, 'name' => $name, 'username' => $username, 'email' => $email, 'password' => $password, 'is_admin' => $is_admin] = $result;
+        $this->setAttributes($name, $username, $email, $password, $is_admin);
         return $result;
       }
       return 'Password is incorrect!';
@@ -133,7 +134,7 @@ class User
 
   public function get_user()
   {
-    $sql = "SELECT * FROM User WHERE user_id=:user_id";
+    $sql = "SELECT * FROM Users WHERE user_id=:user_id";
     $stmt = $this->pdo->prepare($sql);
     $stmt->execute(['user_id' => $this->user_id]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -142,7 +143,7 @@ class User
 
   public function reset_password($new_password)
   {
-    $sql = "UPDATE user SET password=:password WHERE user_id=:user_id";
+    $sql = "UPDATE users SET password=:password WHERE user_id=:user_id";
     $stmt = $this->pdo->prepare($sql);
     $new_password = htmlspecialchars(strip_tags($new_password));
     try {
@@ -160,7 +161,7 @@ class User
 
   public function change_username($new_username)
   {
-    $sql = "UPDATE user SET username=:username WHERE user_id=:user_id";
+    $sql = "UPDATE users SET username=:username WHERE user_id=:user_id";
     $stmt = $this->pdo->prepare($sql);
     $new_username = htmlspecialchars(strip_tags($new_username));
     try {
@@ -179,7 +180,7 @@ class User
 
   public function change_email($new_email)
   {
-    $sql = "UPDATE user SET email=:email WHERE user_id=:user_id";
+    $sql = "UPDATE users SET email=:email WHERE user_id=:user_id";
     $stmt = $this->pdo->prepare($sql);
     $new_email = htmlspecialchars(strip_tags($new_email));
     try {
