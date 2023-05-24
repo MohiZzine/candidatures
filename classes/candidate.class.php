@@ -138,9 +138,4 @@ class Candidate {
       echo "Error : " . $e->getMessage();
     }
   }
-
-  public 
-
-
-
 }

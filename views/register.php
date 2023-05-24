@@ -1,4 +1,4 @@
-<?php $title = "Sign Up";
+<?php $title = "Sign Up Page";
 require '../includes/header.php' ?>
 
 <?php
@@ -17,18 +17,16 @@ if (isset($_GET['password'])) {
 if (isset($_GET['confirm_password'])) {
   $confirm_passwordError = $_GET['confirm_password'];
 }
-
-
 ?>
 
 <body>
-  <div class="container-md">
+  <div class="body-wrapper">
     <form action="../server/register_handler.php" name="register" method="POST" class="form-group" id="register">
-      <div class="d-flex align-items-center justify-content-justify gap-3">
+      <div class="d-flex align-items-center justify-content-center gap-3">
         <img src="../assets/login.png" alt="vote" style="height: 300px; width: 300px;" class="px-4 py-5">
         <div class="d-flex flex-column align-items-center justify-content-center my-2 mx-3" style="height: 100vh;">
           <p class="text-center text-danger m-3" id="register-error"></p>
-          <h1>Sign Up</h1>
+          <h1 class="text-white m-3">Sign Up</h1>
           <input type="text" name="name" id="name" class="form-control bg-whitesmoke px-3 py-2 m-2" placeholder="Name">
           <input type="text" name="username" id="username" class="form-control bg-whitesmoke px-3 py-2 m-2 <?php echo isset($usernameError) ? 'is-invalid' : null ?>" placeholder="Username">
           <?php if (isset($usernameError)) : ?>

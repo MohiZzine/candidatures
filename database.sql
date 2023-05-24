@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS candidates (
   candidate_id INT NOT NULL AUTO_INCREMENT,
   election_id INT NOT NULL,
   candidate_name VARCHAR(45) NOT NULL,
-  photo VARCHAR(255) NOT NULL,
+  photo TEXT NOT NULL,
   PRIMARY KEY (candidate_id),
   FOREIGN KEY (election_id) REFERENCES elections (election_id)
 );
@@ -45,34 +45,62 @@ CREATE TABLE IF NOT EXISTS votes (
 CREATE TABLE IF NOT EXISTS programs (
   program_id INT NOT NULL AUTO_INCREMENT,
   candidate_id INT NOT NULL,
-  program_title INT NOT NULL,
-  program_description INT NOT NULL,
-  programme_video VARCHAR(255) NOT NULL,
-  programme_affiche INT NOT NULL,
+  program_title VARCHAR(40) NOT NULL,
+  program_description TEXT NOT NULL,
+  programme_video TEXT NOT NULL,
+  programme_affiche TEXT NOT NULL,
   PRIMARY KEY (program_id),
   FOREIGN KEY (candidate_id) REFERENCES candidates (candidate_id)
 );
 
--- Insert some raw data
 
+-- Inserting predefined data
 INSERT INTO users (username, name, email, password, is_admin)
 VALUES
-('user1', 'User One', 'user1@email.com', 'password1', 0),
+('Mohi', 'Mohieddine Farid', 'mohieddinefarid@gmail.com', 'mohi2003', 0),
+('ABentajer', "Ahmed Bentajer", 'abentajer@gmail.com', 'abentajer', 1);
 
-INSERT INTO elections (title, description, start_date, end_date)
-VALUES
-('Election 1', 'This is the first election.', '2023-06-01 10:10:10', '2023-06-30 23:20:55'),
-('Election 2', 'This is the second election.', '2023-06-30 18:30:53', '2023-07-01 30:30:30'),
-('Election 3', 'This is the third election.', '2023-06-30 11:59:59', '2023-08-01 50:50:50'),
+  ('abdobnd', 'Abderrahmane Baidoune', 'bnd@example.com', '', 0),
+  ('arnbasma', 'Basma Arnaoui', 'basma@example.com', '', 0),
+  ('iboud','Ilyas Boudhaine', 'iboud@gmail.com', 0),
+  ('soufi', 'Soufiane El Amrani', 'soufi@gmail.com', 0),
+  ('Salimi', 'Mohamed Amine Salimi', 'salimi@gmail.com', 0),
+  ('Ghali', 'El Ghali Benjelloun', 'ghali@gmail.com', 0),
+  ('Fadil', 'Fatima Ezzahrae Fadil', 'fadil@gmail.com', 0),
+  ('maryam', 'Maryam Mennou', 'maryam@gmail.com', 0),
+  ('sami', 'Sami Agourram', 'sami@gmail.com', 0),
+  ('maftah', 'Mahmoud Maftah', 'maftah@example.com', '', 0);
+
+INSERT INTO elections(title, description, start_date, end_date)
+VALUES 
+  ('Élection du président du conseil des étudiants', 'Élection du président de l’Université pour l’année académique 2023-2024', '2023-09-01 00:00:00', '2023-09-07 23:59:59'),
+  ('Élection du délégué de classe CPI1 pour l\’année académique 2023/2024', 'Élection du représentant des étudiants pour l’année académique 2023-2024', '2023-09-08 00:00:00', '2023-09-14 23:59:59'),
+
+  
+  ('Élection du délégué de classe CPI2 pour l\’année académique 2023/2024', 'Élection du représentant des étudiants pour l’année académique 2023-2024', '2023-09-08 00:00:00', '2023-09-14 23:59:59');
 
 INSERT INTO candidates (election_id, candidate_name, photo)
-VALUES
-(1, 'Candidate 1', 'candidate1_photo_url'),
+VALUES 
+  (1, 'Aberrahmane Baidoune', 'https://example.com/images/ali_benkirane.jpg'),
+  (3, 'Aberrahmane Baidoune', 'https://example.com/images/ali_benkirane.jpg'),
+  (1, 'Basma Arnaoui', 'https://example.com/images/fatima_zahra_el_idrissi.jpg'),
+  (3, 'Basma Arnaoui', 'https://example.com/images/fatima_zahra_el_idrissi.jpg'),
+  (2, 'Fatima Ezzahra Fadil', 'https://example.com/images/said_el_khadiri.jpg'),
+  (1, 'Sami Agourram', 'https://example.com/images/amina_bouziane.jpg'),
+  (2, 'El Ghali Benjelloun', 'https://example.com/images/abdelhak_el_mansouri.jpg');
 
 INSERT INTO votes (election_id, user_id, vote)
-VALUES
-(1, 1, 1, '2023-06-05 10:30:00'),
+VALUES 
+  (1, 1, 1), 
+  (1, 2, 2),
+  (1, 3, 1),
+  (2, 1, 4),
+  (2, 2, 3),
+  (2, 3, 4);
 
 INSERT INTO programs (candidate_id, program_title, program_description, programme_video, programme_affiche)
-VALUES
-(1, 'Program 1', 'This is the first program.', 'program1_video_url', 'program1_affiche_url'),
+VALUES 
+  (1, 'Programme de développement universitaire', 'Description du programme de développement universitaire', 'https://example.com/videos/program1.mp4', 'https://example.com/images/program1.jpg'),
+  (2, 'Programme d’engagement étudiant', 'Description du programme d’engagement étudiant', 'https://example.com/videos/program2.mp4', 'https://example.com/images/program2.jpg'),
+  (3, 'Programme de représentation des étudiants', 'Description du programme de représentation des étudiants', 'https://example.com/videos/program3.mp4', 'https://example.com/images/program3.jpg'),
+  (4, 'Programme d’engagement communautaire', 'Description du programme d’engagement communautaire', 'https://example.com/videos/program4.mp4', 'https://example.com/images/program4.jpg');
