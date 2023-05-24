@@ -64,9 +64,8 @@ if (isset($_POST['login'])) {
     }
 
     session_start();
-    $_SESSION['user'] = $login;
     $_SESSION['user_id'] = $login['id'];
-    $_SESSION['user_first_name'] = $login['first_name'];
+    $_SESSION['user_name'] = $login['name'];
     header('Location: ../index.php');
     exit();
 }

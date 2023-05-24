@@ -3,11 +3,11 @@ session_start();
 
 if (!isset($_SESSION['user_id'])) {
   header('Location: views/login.php');
-} else if (isset($_SESSION['user_id']) && $_SESSION['user_is_admin'] == 0) {
-  header('Location: views/user.php');
+} else if (isset($_SESSION['user_id'])) {
+  header('Location: views/userDashboard.php');
   exit;
-} else if (isset($_SESSION['user_id']) && $_SESSION['user_is_admin'] == 1) {
-  header('Location: views/admin.php');
+} else if (isset($_SESSION['admin_id'])) {
+  header('Location: views/adminDashboard.php');
   exit;
 }
 

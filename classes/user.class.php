@@ -89,16 +89,16 @@ class User
     $this->active = $active;
   }
 
-  public function register()
+  public function register($name, $username, $email, $password, $is_admin)
   {
-    $is_admin = $this->is_admin ? 1 : 0;
     $sql = "INSERT INTO users(name, username, email, password, is_admin) VALUES (:name, :username, :email, :password, :is_admin)";
     $stmt = $this->pdo->prepare($sql);
-    $this->name = htmlspecialchars(strip_tags($this->name));
-    $this->username = htmlspecialchars(strip_tags($this->username));
-    $this->email = htmlspecialchars(strip_tags($this->email));
-    $this->password = htmlspecialchars(strip_tags($this->password));
+    $this->name = htmlspecialchars(strip_tags($name));
+    $this->username = htmlspecialchars(strip_tags($username));
+    $this->email = htmlspecialchars(strip_tags($email));
+    $this->password = htmlspecialchars(strip_tags($password));
     $hashed_password = password_hash($this->password, PASSWORD_BCRYPT);
+    $this->is_admin = $is_admin;
     if ($stmt->execute(['name' => $this->name, 'username' => $this->username, 'email' => $this->email, 'password' => $hashed_password, 'is_admin' => $is_admin])) {
       return [
         'user_id' => $this->pdo->lastInsertId(),
@@ -114,7 +114,7 @@ class User
 
   public function login($username, $password)
   {
-    $sql = "SELECT * FROM Users WHERE username=:username";
+    $sql = "SELECT * FROM Users WHERE username = :username";
     $stmt = $this->pdo->prepare($sql);
     $username = htmlspecialchars(strip_tags($username));
     $password = htmlspecialchars(strip_tags($password));

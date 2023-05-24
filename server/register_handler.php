@@ -59,7 +59,7 @@ if (isset($_POST['register'])) {
   }
 
   if (!empty($errors)) {
-    $errors_string = implode('&', $errors);
+      $errors_string = implode('&', $errors);
     header("Location: ../views/register.php?" . $errors_string);
     exit();
   }
@@ -68,18 +68,23 @@ if (isset($_POST['register'])) {
   $db->getConnection();
 
   $user = new User($db->pdo);
-  // $user->set_is_admin(0);
-  $user->setAttributes($name, $username, $email, $password, 0);
-  $register = $user->register();
+  $register = $user->register($name, $username, $email, $password, 0);
   if (!$register) {
     $register_error = "register=Username, email, or password already exists!";
     header('Location: ../views/register.php?' . $register_error);
   }
 
   session_start();
-  $_SESSION['user_id'] = $register['user_id'];
-  $_SESSION['user_name'] = $register['name'];
-  $_SESSION['user_email'] = $register['email'];
-  header('Location: ../index.php');
+  if ($user->get_is_admin()) {
+    $_SESSION['admin_id'] = $register['user_id'];
+    $_SESSION['admin_name'] = $register['name'];
+    $_SESSION['admin_email'] = $register['email'];
+    header('location: ../views/admin/adminDashboard.php');
+  } else {
+    $_SESSION['user_id'] = $register['user_id'];
+    $_SESSION['user_name'] = $register['name'];
+    $_SESSION['user_email'] = $register['email'];
+    header('location: ../views/user/userDashboard.php');
+  }
   exit();
 }
