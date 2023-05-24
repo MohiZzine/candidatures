@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS programs (
   candidate_id INT NOT NULL,
   program_title INT NOT NULL,
   program_description INT NOT NULL,
-  programme_video INT NOT NULL,
+  programme_video VARCHAR(255) NOT NULL,
   programme_affiche INT NOT NULL,
   PRIMARY KEY (program_id),
   FOREIGN KEY (candidate_id) REFERENCES candidates (candidate_id)
